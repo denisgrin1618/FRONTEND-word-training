@@ -1,0 +1,864 @@
+﻿<html>
+ <head>
+	<script src="./jquery-3.3.1.js"></script>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Выравнивание</title>
+  <style type="text/css">
+  body{
+	font-family: 'Comic Sans', cursive;
+  }
+	div { border-radius: 5px; }
+   .textBoxCenter {
+		position: absolute;
+		width: 430px; 				/* Ширина слоя в пикселах */
+		height: 600px; 				/* Высота слоя в пикселах */
+		left: 200px; 				/* Положение слоя от левого края */
+		top: 10px; 					/* Положение слоя от верхнего края */
+		//border: solid 1px black; 	/* Параметры рамки вокруг */
+		padding: 10px; 				/* Поля вокруг текста */
+		overflow: auto; 			/* Добавление полосы прокрутки */
+		background-image: url(images/wirebound_writing_pad_yellow_midle.jpg);		
+   }
+   .textBoxLeft{
+		//position: absolute;
+		left: 90px; 					
+		top: 10px;
+		width: 150px;
+		padding: 10px;
+		border: solid 1px black;
+		display: inline-block;
+		text-align: left;
+		visibility:  visible; 
+   }
+    .textBoxRight{
+		//position: absolute;
+		left: 270px; 					
+		top: 10px;
+		width: 160px;
+		border: solid 1px black;
+		display: inline-block;
+		text-align: left;
+		visibility:  visible; 
+   }
+   .textBoxAnswer{
+		width: 160px;
+		height: 80px;
+		display: inline-block;
+		border: solid 1px black;
+		text-align: center;
+		visibility:  hidden;
+   }
+   
+   .tdWordTranslete{
+		//border: solid 1px black;
+		visibility:  visible;
+		margin-left: 10px;
+		
+		//-webkit-filter: blur(5px);
+		//-moz-filter: blur(5px);
+		//-o-filter: blur(5px);
+		//-ms-filter: blur(5px);
+        filter: blur(5px);
+   }
+   
+   img{
+		//position: absolute;
+		left: 10px; 					
+		top: 10px;
+   }
+   
+	table  {
+		//border: 1px solid black;
+		table-layout: fixed;
+		width: 95%;
+		
+		vertical-align: top;
+		text-align: left;
+		//padding: 15px;
+		margin-left: 5px;
+		margin-top: 101px;
+		font-size: 14px;
+		//font-weight: 600;
+		font-family: 'Comic Sans', cursive;
+		border-spacing: 7px 11px; 
+		word-wrap: break-word;
+		//color: blue;
+	}
+	#TableClient{
+		height: 490px;
+	}
+	#TableDataSource{
+		visibility:  hidden;
+		z-index: -10;
+	}
+	#TableDataSource .tdWordTranslete{
+		visibility:  hidden;
+	}
+	
+   tr{
+		//border: 1px solid black;
+		vertical-align: top;
+		border-spacing:11px;
+		
+   }
+   .tdWord{
+   }
+ 
+ .tdWordTranslete{
+	//background-color: RGB(192, 192, 192);
+	cursor: pointer;
+	//border: solid 1px blue;
+	border-radius: 3px; 
+ }
+
+ .tdNumberRow{
+	width:50px;
+	vertical-align: top;
+	text-align: left;
+	color: red;
+	padding: 0px;
+	//border: solid 1px blue;
+	margin-left: 0px;
+	font-weight: 600;
+ }
+
+ .elementMenu {
+		display: flex;
+        justify-content: center;	
+		position: absolute;
+		background:#fcf08a;
+		width:30px;
+		height:30px;
+		left: 70px;
+		top: 40px;
+		border: 3px solid #fff;
+		cursor: pointer;
+	    border-radius: 19px;
+	   -webkit-border-radius: 19px;
+	   -moz-border-radius: 19px;
+}
+
+.elementMenu:hover {
+	background:#fff;
+}
+
+.elementMenu > img{
+	align-self:center;
+}
+
+#Menu {
+	visibility:  hidden;
+}
+
+#EditTextAnswer{
+	position: absolute;
+	visibility:  hidden;
+	resize: none;
+	border-radius: 5px;
+}
+
+#ButtonSaveTextAnswer{
+	position: absolute;
+	visibility:  hidden;
+}
+
+.MainMenu{
+	margin-top: 40px;
+}
+.elementMainMenu{
+	padding: 3px;
+	cursor: pointer;
+	width:200px;
+	height:29px;
+	text-align: left;
+	overflow: hidden; /* всё, что выходит за рамки блока обрезается */
+    white-space: nowrap; /* блок может содержать не более одной строки */ 
+	background-image: url(images/pencil.png);
+	padding-left: 50px;
+}
+
+#straightedge{
+	position: absolute;
+	width: 430px; 				
+	left: 200px; 				
+	top: 630px; 				
+}
+
+#Pages{
+	position: absolute;
+	z-index: 10;
+	cursor: pointer;
+}
+
+.NumberPage{
+	position: absolute;
+	font-size: 10px;
+	font-weight: 100;
+	text-align: center;
+}
+
+
+
+#signPageCurrent, #signPageSelected{
+	margin-top: -5;
+	color: #FF0000;
+	font-weight: 800;
+	font-size: 10px;
+	font-weight: 100;
+	text-align: center;
+}
+
+#ScalePage{
+	//border: 1px solid black;
+	position: absolute;
+	width: 405px; 	
+	height: 30px;	
+	left: 220px; 				
+	top: 630px;
+	cursor: pointer;
+	
+}
+
+#SelectPage{
+	position: absolute;
+	left: 120px; 				
+	top: 6px;
+	visibility:  hidden;
+}
+
+  </style>
+  
+  <script>
+
+  
+	var CurrentTdWordTranslete;
+	var NumberCurrentPage = 1;
+	var NumberSelectedPage = 1;
+	var masDataSource = [];
+	var PageDataSource = [];
+
+function MoveCircle(elem, f, left, top){
+	
+	var radius 	= 50;
+	
+	elem.css('left', left + radius * Math.sin(f) + 'px'); 
+	elem.css('top', top + radius * Math.cos(f) + 'px');
+	elem.css('visibility', 'visible');
+	//console.log(elem.css('visibility'));
+}
+
+function ShowMenu ( X, Y) {
+	
+	var radius 	= 50;
+	var speed  	= 15;
+	var f      	= 0;
+	var s   	= 2 * Math.PI/180; 
+	var left 	= X - radius/2;
+	var top  	= Y - radius/2;
+	
+	$('#Menu').find("div").each(function(index) { 
+		
+		var el = $(this);
+		var timer = setInterval(function() { 
+				f -= s; 
+				MoveCircle(el, f, left, top);
+				if(f < -index-1.1 ){ 
+					clearInterval(timer); 
+				}
+		}, speed);		
+	});
+	
+	//console.log($(elem).find('div').css('visibility'));
+}
+
+function ConnectHandlers_tdWordTranslete(){
+
+		$('.tdWordTranslete').click(function(e){
+
+			CurrentTdWordTranslete = this;		
+			var offset = $('.textBoxCenter').offset();
+			var relativeX = e.pageX - offset.left;
+			var relativeY = e.pageY - offset.top ;
+	  
+			RefreshVisabilityMenu('visible');	
+			ShowMenu( relativeX, relativeY);
+		});
+		
+		$( ".tdWordTranslete" ).mouseover(function(event) {
+			$(this).css('color', 'red');
+		});
+		
+		$( ".tdWordTranslete" ).mouseout(function() {
+			$(this).css('color', '#000000');
+		});
+}
+
+function RefreshAnswer(elem, attrVisibility){
+	
+	var filter = $(elem).css('filter');	
+	if (attrVisibility == 'hidden') {
+		filter = 'blur(5px)';		
+	} else if (attrVisibility == 'visible'){
+		filter = 'none';
+	}		
+	$(elem).css('filter', filter);
+	
+	var numRow = $(elem).parent().find('.tdNumberRow').text();
+	//console.log(numRow);
+	$(PageDataSource[NumberCurrentPage]).each(function(index) { 
+		if(this.NumberRow == numRow){
+			this.Filter = filter;
+			//console.log(this);
+		}
+	});
+}
+
+function RefreshEditTextAnswer(CurrentTdWordTranslete, attrVisibility){
+	
+	var left 	= $(CurrentTdWordTranslete).offset().left;
+	var top 	= $(CurrentTdWordTranslete).offset().top;
+	var width 	= $(CurrentTdWordTranslete).css('width');
+	var height 	= $(CurrentTdWordTranslete).css('height');
+	
+	$('#EditTextAnswer').css('left', left);
+	$('#EditTextAnswer').css('top', top);
+	$('#EditTextAnswer').css('width', width);
+	$('#EditTextAnswer').css('height', height);
+	$('#EditTextAnswer').css('visibility', attrVisibility);
+	
+	
+	var but  		= $('#ButtonSaveTextAnswer');
+	var but_left 	= left + $(CurrentTdWordTranslete).width() - but.width()  - 14;
+	var but_top  	= top + $(CurrentTdWordTranslete).height() - but.height() - 6;
+	//console.log("" + left +" + " + CurTd.width() +" - " + but.width());
+	
+	but.css('visibility', attrVisibility);
+	but.css('left', but_left);
+	but.css('top', but_top);
+}
+
+function RefreshVisabilityMenu(attrVisibility){
+	$('#Menu').find('div').css('visibility', attrVisibility);
+}
+
+function RefreshSelectPage(){
+	
+	var left = $('#SelectPage').position().left + $("#ScalePage").position().left;
+	$('#signPageSelected').text(NumberSelectedPage);
+	
+	MovePageCurrent(NumberSelectedPage);
+	
+	$('#NumberPageCurrent').find('p').text(NumberSelectedPage);
+	$('#NumberPageCurrent').css('left', left);
+	
+}
+
+function FillOutEditTextAnswer(){
+	
+	var textAnswer = $(CurrentTdWordTranslete).text();
+	$('#EditTextAnswer').val(textAnswer);
+	
+}
+
+function ConnectHandlers(){
+			
+		ConnectHandlers_tdWordTranslete();
+			
+		$('#MenuComandEdit').click(function(e){
+			RefreshVisabilityMenu('hidden');	
+			FillOutEditTextAnswer();			
+			RefreshEditTextAnswer(CurrentTdWordTranslete, 'visible');	
+		});
+		
+		$('#MenuComandOpen').click(function(e){
+			RefreshVisabilityMenu('hidden');
+			RefreshAnswer(CurrentTdWordTranslete, 'visible');
+		});
+		
+		$('#MenuComandClose').click(function(e){
+			RefreshVisabilityMenu('hidden');
+			RefreshAnswer(CurrentTdWordTranslete, 'hidden');			
+		});
+		
+		$('#MenuComandFavorites').click(function(e){
+			RefreshVisabilityMenu('hidden');		
+		});
+		
+		$('body').click(function(e){
+			RefreshVisabilityMenu('hidden');			
+		});
+		
+		$('#ButtonSaveTextAnswer').click(function(e){
+			RefreshEditTextAnswer(CurrentTdWordTranslete, 'hidden');
+			var textA = $('#EditTextAnswer').val();		
+			$(CurrentTdWordTranslete).text(textA);		
+		});
+		
+		$('#MovePageRight').click(function(e){
+			MovePageRight();			
+		});
+		
+		$('#MovePageToEnd').click(function(e){
+			MovePageToEnd();			
+		});
+		
+		$('#MovePageLeft').click(function(e){
+			MovePageLeft();			
+		});
+		
+		$('#MovePageToBegining').click(function(e){
+			MovePageToBegining();			
+		});
+		
+		$( "#ScalePage" ).mousemove(function( event ) {
+			MoveSelectPage(event.pageX, event.pageY);
+			RefreshVisibilityNumberPageLastAndFirst();
+		});
+		
+		$( "#ScalePage" ).mouseout(function() {
+		  $('#SelectPage').css('visibility', 'hidden');
+		});
+		
+		$( "#ScalePage" ).mouseover(function() {
+		  $('#SelectPage').css('visibility', 'visible');
+		});
+		
+		$( "#ScalePage" ).click(function(e) {
+			RefreshSelectPage();
+			RefreshVisibilityNumberPageLastAndFirst();
+		});
+
+		$( ".elementMainMenu" ).mouseover(function(event) {
+			$(this).css('margin-left', '-5px');
+			$(this).css('color', '#FFFFFF');
+		});
+		
+		$( ".elementMainMenu" ).mouseout(function() {
+			$(this).css('margin-left', '0px');
+			$(this).css('color', '#000000');
+		});
+		
+}
+
+function ArrangeElements(){
+
+	////////////////////////////////////////////////////////////
+	//1. straightedge 
+	
+	var straightedge_width 	= $('#straightedge').width();
+	var straightedge_top	= $('#straightedge').position().top;	
+	var straightedge_left	= $('#straightedge').position().left; 
+	var straightedge_height	= $('#straightedge').height();  
+	
+	//console.log(_width);	
+	var width 			= $('#Pages').width();
+	var top				= $('#Pages').position().top;	
+	var left			= $('#Pages').position().left; 
+	var height			= $('#Pages').height();  
+	var PageLastwidth 	= $('#NumberPageLast').width();
+	
+	left = straightedge_left + (straightedge_width/2) - (width/2);
+	top  = straightedge_top + straightedge_height - height;
+	
+	$('#Pages').css('left', left);
+	$('#Pages').css('top', top);
+	
+	
+	$('#NumberPageFirst').css('left', straightedge_left + 20);
+	$('#NumberPageFirst').css('top', straightedge_top + 17);
+	
+	$('#NumberPageLast').css('left', straightedge_left + straightedge_width - 14 ); //- (PageLastwidth/2)
+	$('#NumberPageLast').css('top', straightedge_top + 17);
+	
+	$('#NumberPageCurrent').css('left', straightedge_left +20);
+	$('#NumberPageCurrent').css('top', straightedge_top + 6);
+	
+	var curPage  = Number($('#NumberPageCurrent').find('p').text());	
+	
+	
+	
+	////////////////////////////////////////////////////////////
+	//2. TableDataSource 
+	
+	$('#TableDataSource').css('width', $('#TableClient').width());
+	FillOutMassifDataSource();
+	FillOutTableDataSource();
+	FillOutPagesInTableDataSource();
+	FillOutMassifPageDataSource();	
+	MovePageCurrent(1);	
+	//console.log(PageDataSource);
+	RemoveTableDataSource();
+	
+	////////////////////////////////////////////////////////////
+	//3. TableClient 
+	//MovePageCurrent(curPage);
+	
+	
+}
+
+function RefreshVisibilityNumberPageLastAndFirst(){
+
+	var numCurentPage 		= Number($('#NumberPageCurrent').text());		
+	var leftPageLast 		= $('#NumberPageLast').position().left;
+	var rightPageCurrent 	= $('#NumberPageCurrent').position().left + $('#NumberPageCurrent').width();
+	var rightSelectPage 	= $('#SelectPage').position().left + $('#ScalePage').position().left + $('#SelectPage').width();
+	
+	//console.log(" " + leftPageLast + " " + rightSelectPage);
+	if(rightPageCurrent > leftPageLast || rightSelectPage > leftPageLast){
+		$('#NumberPageLast').css('visibility', 'hidden');
+	}
+	else {
+		$('#NumberPageLast').css('visibility', 'visible');
+	}
+	
+	if(numCurentPage == 1 || NumberSelectedPage == 1){
+		$('#NumberPageFirst').css('visibility', 'hidden');
+	}
+	else{
+		$('#NumberPageFirst').css('visibility', 'visible');
+	}
+}
+
+function MovePageCurrent(numCurrentPage){
+	
+	NumberCurrentPage = numCurrentPage;
+	//console.log(numCurrentPage);
+	
+	var lastPage = Number($('#NumberPageLast').text());
+	if(numCurrentPage > lastPage){
+		return;
+	}
+	if(numCurrentPage == 0){
+		return;
+	}
+		
+	
+
+
+	
+	$('#TableClient').find('tr').remove();
+	$(PageDataSource[numCurrentPage]).each(function(index) { 
+		var tagTr = CreateTr(this.NumberRow, this.Word, this.WordTranslete, this.Filter);
+		$("#TableClient").append(tagTr);  //.find('.tdWordTranslete').css('filter', this.Filter);
+		//var tem = $("#TableClient").append(tagTr);
+		//console.log(tem);		
+	});
+	ConnectHandlers_tdWordTranslete();	
+	//console.log(PageDataSource[1][0]);
+	//FillOutPageTableClient(numCurrentPage);
+		
+		
+		
+		
+	var numLastPage = Number($('#NumberPageLast').text()) -1;
+	var stepWight 	= Math.round( $('#ScalePage').width() / numLastPage );
+	var left 		= $('#ScalePage').position().left - 5 + stepWight * (numCurrentPage -1) ;
+	
+	//console.log(stepWight);
+	$('#NumberPageCurrent').find('p').text(numCurrentPage);
+	$('#NumberPageCurrent').css('left', left);
+	
+	
+}
+
+function MovePageLeft(){
+	
+	var curPage  = Number($('#NumberPageCurrent').find('p').text());	
+	MovePageCurrent(curPage - 1);
+	RefreshVisibilityNumberPageLastAndFirst();
+	
+}
+
+function MovePageRight(){
+
+	var curPage  = Number($('#NumberPageCurrent').find('p').text());	
+	MovePageCurrent(curPage + 1);
+	RefreshVisibilityNumberPageLastAndFirst();
+	
+}
+
+function MovePageToEnd(){
+
+	var lastPage = Number($('#NumberPageLast').text());	
+	MovePageCurrent(lastPage);	
+	RefreshVisibilityNumberPageLastAndFirst();
+}
+
+function MovePageToBegining(){
+	
+	MovePageCurrent(1);	
+	RefreshVisibilityNumberPageLastAndFirst();
+}
+
+function MoveSelectPage(X, Y){
+	
+	var left 			= X - $("#ScalePage").position().left-5;
+	var numLastPage 	= Number($('#NumberPageLast').text()) -1;
+	var stepWight 		= Math.round( $('#ScalePage').width() / numLastPage );
+	NumberSelectedPage 	= Math.round(left / stepWight) + 1;
+	
+	$('#signPageSelected').text(NumberSelectedPage);
+	$('#SelectPage').css('left', left);	
+}
+
+function FillOutPagesInTableDataSource(){
+
+	var HeightPage 			= $('#TableClient').height();
+	var MarginTop 			= 11; //$('tr').css('border-spacing');
+	var NumCurrentPage 		= 1;
+	var CurrentHeightPage 	= 0;	
+	//console.log(HeightPage);
+	
+	$('#TableDataSource').find('tr').each(function(index) { 
+		
+		CurrentHeightPage += ($(this).height() + MarginTop);
+		
+		if(CurrentHeightPage > HeightPage ){
+			NumCurrentPage += 1;
+			CurrentHeightPage = ($(this).height() + MarginTop);
+		}
+		
+		$(this).attr('id', NumCurrentPage);;
+	});
+	
+	$('#NumberPageLast').text(NumCurrentPage);
+}
+
+function CreateTr(NumberRow, Word, WordTranslete, Filter){
+	return "<tr>" 
+		+"<td class=\"tdNumberRow\">" 		+ NumberRow + "</td>"
+		+"<td class=\"tdWord\">" 			+ Word + "</td>"
+		+"<td class=\"tdWordTranslete\" style='filter:" + Filter+ "'>" 	+ WordTranslete + "</td>"
+	+"</tr>";
+}
+
+function FillOutPageTableClient(numPage){
+	
+	$('#TableClient').find('tr').remove();
+	
+	$(PageDataSource[numPage]).each(function(index) { 
+		var tagTr = CreateTr(this.NumberRow, this.Word, this.WordTranslete, this.Filter);
+		$("#TableClient").append(tagTr); //.find('.tdWordTranslete').css('filter', this.Filter);		
+	});
+	
+	ConnectHandlers_tdWordTranslete();	
+
+	console.log(PageDataSource[1][0]);
+}
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////
+
+function NewObjectRow(NumberRow, Word, WordTranslete, Filter){
+	
+	var row = new Object();
+	row.NumberRow 		= NumberRow;
+	row.Word 			= Word; 
+	row.WordTranslete 	= WordTranslete;
+	row.Filter			= Filter;
+	
+	return row;
+}
+
+function FillOutTableDataSource(){
+
+	var TableDataSource = $('#TableDataSource');
+	
+	$(masDataSource).each(function(index) {
+		var tagTr = CreateTr(this.NumberRow, this.Word, this.WordTranslete, this.Filter);
+		$("#TableDataSource").append(tagTr);		
+     });
+
+}
+
+function FillOutMassifDataSource(){
+	
+	masDataSource.push( NewObjectRow(1, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(2, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(3, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(4, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(5, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(6, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(7, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(8, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(9, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(10, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(11, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(12, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(13, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(14, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(15, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(16, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(17, "1111111", "222222222sdfoi yuperuie poiuerouiewe ttueptu2", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(18, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(19, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(20, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(21, "1111111", "2222222222weriouwerio uporuprrwperuwoeruqw789 45", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(22, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(23, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(24, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(25, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(26, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(27, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(28, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(29, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(30, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(31, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(32, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(33, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(34, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(35, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(36, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(37, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(38, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(39, "1111111", "2222222222", 'blur(5px)') );
+	masDataSource.push( NewObjectRow(40, "1111111", "2222222222", 'blur(5px)') );
+	//masDataSource[0] = { NumberRow: 1,  Word: "Ckjdfj4", WordTranslete: "234"};
+	//masDataSource[1] = { NumberRow: 2,  Word: "Ckjdfj2", WordTranslete: "234 sdfasdfsadf asdkfjashldkfj dshf6666666666666666666666666666666666666666666666666666666666666666"};
+	//masDataSource[2] = { NumberRow: 3,  Word: "Ckjdfj3", WordTranslete: "234 66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"};
+	//masDataSource[3] = { NumberRow: 4,  Word: "Ckjdfj4", WordTranslete: "234"};
+	//masDataSource[4] = { NumberRow: 5,  Word: "Ckjdfj5", WordTranslete: "234"};
+	//masDataSource[5] = { NumberRow: 6,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[6] = { NumberRow: 7,  Word: "Ckjdfj7", WordTranslete: "234"};
+	//masDataSource[7] = { NumberRow: 8,  Word: "Ckjdfj8", WordTranslete: "234"};
+	//masDataSource[8] = { NumberRow: 9,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[9] = { NumberRow: 10,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[10] = { NumberRow: 11,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[11] = { NumberRow: 12,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[12] = { NumberRow: 13,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[13] = { NumberRow: 14,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[14] = { NumberRow: 15,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	//masDataSource[15] = { NumberRow: 16,  Word: "Ckjdfj6", WordTranslete: "234dsaf;kjd fas;ldfkj a;sdlfj; asdflkasjdf ;alskdfjasd"};
+	
+}
+
+function FillOutMassifPageDataSource(){
+	
+	$('#TableDataSource').find('tr').each(function(index) {
+	
+		var numPage = Number($(this).attr('id'));
+		//console.log(numPage);
+		
+		if( PageDataSource[numPage]== undefined) {
+			PageDataSource[numPage] = [];
+			//console.log("11111111");
+		}
+			
+		if(numPage > 0) {
+			//var row = new Object();
+			var NumberRow 		= $(this).find('.tdNumberRow').text();
+			var Word 			= $(this).find('.tdWord').text(); 
+			var WordTranslete 	= $(this).find('.tdWordTranslete').text();	
+			var Filter			= $(this).find('.tdWordTranslete').css('filter');
+			var row 			= NewObjectRow(NumberRow, Word, WordTranslete, Filter);
+			PageDataSource[numPage].push(row);
+			//console.log(this);
+		}
+		
+     });
+
+}
+
+function RemoveTableDataSource(){
+	$('#TableDataSource').find('tr').remove();
+} 
+
+</script>
+
+ </head>
+ 
+ 
+ 
+
+
+ <body>
+   
+   
+
+
+	<!--  ЭЛЕМЕНТ ГЛАВНОЕ ОКНО -->
+   <div class="textBoxCenter">
+   <!--<img src="images/wirebound_writing_pad_yellow_midle.jpg"> </img> -->
+
+   <table id="TableClient">
+   
+		  <tr>
+			<td class="tdNumberRow">1.</td>
+			<td class="tdWord">Слово</td>
+			<td class="tdWordTranslete" > Перевод </td>
+		  </tr>
+
+	</table>
+
+	
+	<div id="Menu"  >
+       <div class="elementMenu" id="MenuComandEdit" ><img src="images/edit_16.png"> </img></div> 
+       <div class="elementMenu" id="MenuComandOpen" ><img src="images/open_16.png"></div>
+       <div class="elementMenu" id="MenuComandClose" ><img src="images/close_16.png"></div>
+	   <div class="elementMenu" id="MenuComandFavorites" ><img src="images/favorites_16.png"></div>
+    </div>
+
+	 
+	 
+  </div>
+  
+  
+  
+  <!--  ЭЛЕМЕНТЫ ПЕРЕХОДА ПО СТРАНИЦАМ -->
+  <div id="straightedge"> 
+		<img src="images/straightedge_yellow_midle.jpg"> </img> 
+  </div>
+  <div id="Pages"> 
+	<img src="images/StepToBegining.png" id="MovePageToBegining"> </img> 
+	<img src="images/StepLeft.png" id="MovePageLeft"> </img> 
+	<img src="images/StepRight.png" id="MovePageRight"> </img> 
+	<img src="images/StepToEnd.png" id="MovePageToEnd"> </img> 
+  </div> 
+  <div class="NumberPage" id="NumberPageFirst">1</div>
+  <div class="NumberPage" id="NumberPageLast">30</div>
+  <div class="NumberPage" id="NumberPageCurrent"><img src="images/StepUp.png" align="bottom"> </img> <p id="signPageCurrent" >1</p></div>
+  <div id="ScalePage"> 
+	<div id="SelectPage">
+		<img src="images/StepUpEmpty.png" align="bottom"> </img> <p id="signPageSelected">7</p> 
+	</div>
+  </div>
+  
+  <!--  ЭЛЕМЕНТЫ РЕДАКТИРОВАНИЯ ПОЛЯ ОТВЕТА -->
+	<textarea id="EditTextAnswer" ></textarea>
+	<button id="ButtonSaveTextAnswer"><img src="images/save_16.png"> </img></button>
+	
+	
+	<!--  ЭЛЕМЕНТЫ ГЛАВНОГО МЕНЮ -->
+    <div class="MainMenu">
+		<div class="elementMainMenu">Home</div>
+		<div class="elementMainMenu">My vocabulary</div>
+		<div class="elementMainMenu">Test 1</div>
+		<div class="elementMainMenu">Test 2</div>
+		<div class="elementMainMenu">Test 3</div>
+		<div class="elementMainMenu">Test 4</div>
+		<div class="elementMainMenu">Test 5</div>
+		<div class="elementMainMenu">Statistics</div>
+	</div>
+	
+	
+	<table id="TableDataSource">
+		
+	</table>
+	
+	
+	
+ 	<script type="text/javascript">
+		
+		ArrangeElements();
+		ConnectHandlers();
+		
+	</script>
+
+ </body>
+</html>

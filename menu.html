@@ -1,0 +1,311 @@
+﻿<html><head>
+   <meta charset="utf-8">
+   <meta name="Author" content="Eugene P. Lilitko">
+   <title>Сложное движение элементов</title>
+   <script src="./jquery-3.3.1.js"></script>
+   
+<style type="text/css">
+   body {
+	background:#000000;
+}
+
+#round {
+	position: absolute; 
+	left: 50%;
+	margin-left: -50px; 
+	top: 100px; 
+	width: 200px; 
+	height: 200px;
+	cursor: pointer;
+	border: 5px solid #6495c4;
+	    border-radius: 50px;
+	   -webkit-border-radius: 50px;
+	   -moz-border-radius: 50px;
+	
+}
+.elementMenu {
+		display: flex;
+        justify-content: center;
+		
+	position: absolute;
+	background:#fcf08a;
+	width:30px;
+	height:30px;
+	left: 70px;
+	top: 40px;
+	border: 3px solid #fff;
+	cursor: pointer;
+	    border-radius: 19px;
+	   -webkit-border-radius: 19px;
+	   -moz-border-radius: 19px;
+
+
+	
+}
+.elementMenu:hover {
+	background:#fff;
+}
+
+.elementMenu > img{
+	align-self:center;
+}
+</style>
+
+<script>
+
+function animation(args, elem) { // некоторые аргументы определим на будущее
+	//var $ = {
+	//	radius  :     50, // радиус окружности 
+	//	//speed   :     10 // скорость/задержка ( в js это мс, например 10 мс = 100 кадров в секунду)
+	//	speed   : 		args.speed
+	//}
+	var radius = 50;
+	var speed = args.speed;
+	var f = 0;
+	var s = 2 * Math.PI / 180; //Вычислим угол
+	setInterval(function() { // функция движения 
+		f -= s; // приращение аргумента
+		  elem.style.left =  35 + radius * Math.sin(f) + 'px'; // меняем координаты элемента, подобно тому как мы это делали в школе в декартовой системе координат. Правда, в данном случае используется полярная система координат, изменяя угол
+		  elem.style.top =   35+ radius * Math.cos(f) + 'px';
+	}, speed)
+}
+
+function move(elem, f, left, top){
+	var radius = 50;
+	var left_ = left + radius * Math.sin(f) + 'px'; 
+	var top_  = top + radius * Math.cos(f) + 'px';
+	elem.css('left', left_); 
+	elem.css('top', top_);
+	
+}
+
+function ShowMenu (elem, X, Y) {
+	
+	var radius 	= 50;
+	var speed  	= 15;
+	var f      	= 0;
+	var s   	= 2 * Math.PI/180; 
+	var left 	= X - radius/2;
+	var top  	= Y - radius/2;
+	
+	//var Elements = $(elem).find("div");
+	
+	$(elem).find("div").each(function(index) { 
+		
+		//console.log(-index-1);
+		var el = $(this);
+		var timer = setInterval(function() { 
+				f -= s; 
+				move(el, f, left, top);
+				if(f < -index-1.1 ){ 
+					clearInterval(timer); 
+					//console.log(-index-1);
+				}
+		}, speed);
+		
+	});
+	
+}
+
+
+function animationMenu_3 (elem) {
+	
+
+	
+	var radius = 50;
+	var speed_1 = 15;
+	var speed_2 = 6;
+	var speed_3 = 7;
+	
+	el_1 = $(elem).find("#el_1");
+	el_2 = $(elem).find("#el_2");
+	el_3 = $(elem).find("#el_3");
+	
+	//alert(el_1.attr("id"));
+	
+
+	var f_1 = 0;
+	var f_2 = 0;
+	var f_3 = 0;
+	var s = 2 * Math.PI / 180; 
+
+	
+
+	
+	while (f_1 > -3) {
+  
+		 setTimeout(function () {
+			f_1 -= s; 
+			move(el_1, f_1);
+			console.log(f_1);
+		}, 1000); // время в мс
+
+			
+		
+  
+	}
+
+	//clearInterval(timer_1);
+	
+
+	
+}
+
+function ShowMenu_2 (elem, X, Y) {
+	
+	
+	var el_1 = $(elem).find("#el_1");
+	var el_2 = $(elem).find("#el_2");
+	var el_3 = $(elem).find("#el_3");
+	
+	var radius 	= 50;
+	var speed  	= 15;
+	var f      	= 0;
+	var s   	= 2 * Math.PI/180; 
+	var left 	= X - radius/2;
+	var top  	= Y - radius/2;
+	
+	var timer_1 = setInterval(function() { 
+		f -= s; 
+		move(el_1, f, left, top);
+		//console.log(f);
+		
+		if(f < -1 ){
+			clearInterval(timer_1);
+		}
+	}, speed);
+	
+	var timer_2 = setInterval(function() { 
+		f -= s; 
+		move(el_2, f, left, top);
+		
+		if(f < -2 ){
+			clearInterval(timer_2);
+		}
+	}, speed);
+	
+	var timer_3 = setInterval(function() { 
+		f -= s; 
+		move(el_3, f, left, top);
+		
+		if(f < -3 ){
+			clearInterval(timer_3);
+		}
+	}, speed);
+	
+	
+	//var timer_2 = setInterval(function() { 
+	//	f_2 -= s; 
+	//	var left = 35 + radius * Math.sin(f_2) + 'px'; 
+	//	var top  = 35 + radius * Math.cos(f_2) + 'px';
+	//	el_2.css('left', left); 
+	//	el_2.css('top', top);
+	//}, speed_2);
+	
+	//var timer_3 = setInterval(function() { 
+	//	f_3 -= s; 
+	//	var left = 35 + radius * Math.sin(f_3) + 'px'; 
+	//	var top  = 35 + radius * Math.cos(f_3) + 'px';
+	//	el_3.css('left', left); 
+	//	el_3.css('top', top);
+	//}, speed_3);
+	
+	//var timer_1 = setInterval(function() { move(el_1, f_1);}, speed_1);
+	//var timer_2 = setInterval(function() { move(el_2, f_2);}, speed_2);
+	//var timer_3 = setInterval(function() { move(el_3, f_3);}, speed_3);
+	
+	
+	
+	//setTimeout(function() {clearInterval(timer_1);}, 1000);
+	//setTimeout(function() {clearInterval(timer_2);}, 1000);
+	//setTimeout(function() {clearInterval(timer_3);}, 1000);
+
+	
+}
+
+function ShowMenu_3 (elem, X, Y) {
+	
+	
+	var el_1 = $(elem).find("#el_1");
+	var el_2 = $(elem).find("#el_2");
+	var el_3 = $(elem).find("#el_3");
+	
+	var radius 	= 50;
+	var speed  	= 15;
+	var f      	= 0;
+	var s   	= 2 * Math.PI/180; 
+	var left 	= X - radius/2;
+	var top  	= Y - radius/2;
+	
+	//$.each(array или object,callback);
+	
+	
+	var timer_1 = setInterval(function() { 
+		f -= s; 
+		move(el_1, f, left, top);
+		
+		if(f < -1 ){
+			clearInterval(timer_1);
+		}
+	}, speed);
+	
+	var timer_2 = setInterval(function() { 
+		f -= s; 
+		move(el_2, f, left, top);
+		
+		if(f < -2 ){
+			clearInterval(timer_2);
+		}
+	}, speed);
+	
+	var timer_3 = setInterval(function() { 
+		f -= s; 
+		move(el_3, f, left, top);
+		
+		if(f < -3 ){
+			clearInterval(timer_3);
+		}
+	}, speed);
+	
+	
+}
+
+
+</script>
+
+</head>
+
+<body>
+
+<div id="round"  >
+
+
+       <div class="elementMenu" id="el_1" ><img src="images/edit_16.png"> </img></div> 
+       <div class="elementMenu" id="el_2" ><img src="images/open_16.png"></div>
+       <div class="elementMenu" id="el_3" ><img src="images/close_16.png"></div>
+	   <div class="elementMenu" id="el_4" ><img src="images/favorites_16.png"></div>
+	  
+	
+	   <!--
+	    <div class="elementMenu" onClick="animation({speed:7}, this);"></div> 
+		  -->
+    </div>
+
+
+
+	<script type="text/javascript">
+		  $('#round').click(function(e){
+		  
+		  var offset = $(this).offset();
+		  var relativeX = e.pageX - offset.left;
+		  var relativeY = e.pageY - offset.top ;
+		 
+		
+  
+		
+		  ShowMenu(this, relativeX, relativeY);
+		});
+	</script>
+	
+
+</body></html>
